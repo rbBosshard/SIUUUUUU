@@ -2,6 +2,9 @@ name: Build Dashboard
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - html-update
 
 permissions:
   contents: write
