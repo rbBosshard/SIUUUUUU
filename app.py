@@ -9,14 +9,15 @@ league_name = "FPL CUP SIUUUUUU"
 unknown_winner = -1
 cup_league_id = 2696403
 league_id = 102765
-starting_cup_gameweek = 25
+starting_cup_gameweek = 34
 
 API_URL = f"https://fantasy.premierleague.com/api/leagues-h2h-matches/league/{cup_league_id}/?page=1"
 LEAGUE_URL = f"https://fantasy.premierleague.com/api/leagues-classic/{league_id}/standings/?page_new_entries=1&page_standings=1&phase=1"
 MONEY_PAID_ICON = "🤑"
-MONEY_NOT_PAID_ICON = "🥲"
+MONEY_NOT_PAID_ICON = ""
 OVERRIDE_UNPAID_WINNERS = True
 ERROR_MSG = "Error: Unexpected data. Please check the API response."
+no_opponent = "-"
 
 USERS = {
     "FcLookingDownOnYou",
@@ -150,7 +151,7 @@ for round_name, round_df in rounds_df.items():
             else match["entry_2_points"]
         )
 
-        if entry_2_name == "BYE":
+        if not entry_2_name:
             winner = entry_1_name
         else:
             if entry_1_points == entry_2_points:
@@ -174,10 +175,10 @@ for round_name, round_df in rounds_df.items():
                     user_map[winner] = loser
                     winner = loser if loser in PAID_USERS else unknown_winner
 
-            if not entry_1_name:
-                entry_1_name = "Kein Gegner"
-            if not entry_2_name:
-                entry_2_name = "Kein Gegner"
+        if not entry_1_name:
+            entry_1_name = no_opponent
+        if not entry_2_name:
+            entry_2_name = no_opponent
 
         match_results.append(
             {   
@@ -207,6 +208,7 @@ if not ok:
     )
 
 else:
+    app.title = f"{league_name}"
     app.layout = html.Div(
         [
             html.H1(f"{league_name}", style={"textAlign": "center"}),
@@ -246,7 +248,7 @@ else:
                     },
                     {
                         "if": {"filter_query": "{winner} = 1", "column_id": "team 2"},
-                        "backgroundColor": "#ede5fe",
+                        "backgroundColor": "#F8AFD0FF",
                         "color": "black",
                     },
                     {
@@ -256,7 +258,7 @@ else:
                     },
                     {
                         "if": {"filter_query": "{winner} = 2", "column_id": "team 1"},
-                        "backgroundColor": "#ede5fe",
+                        "backgroundColor": "#F8AFD0FF",
                         "color": "black",
                     },
                 ] 
@@ -265,4 +267,4 @@ else:
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
