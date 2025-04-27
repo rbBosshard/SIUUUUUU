@@ -35,15 +35,10 @@ jobs:
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
     
-    - name: Clean up rebase state (if exists)
+    - name: Checkout and reset html-update branch
       run: |
-        rm -rf .git/rebase-merge
-        git rebase --abort || echo "No rebase in progress"
-
-    - name: Checkout and rebase html-update branch onto main
-      run: |
-        git checkout html-update  # Checkout the html-update branch
-        git fetch origin
+        git fetch --all
+        git checkout html-update || git checkout -b html-update origin/html-update  # Create the html-update branch if it doesn't exist
         git reset --hard origin/main  # Reset the html-update branch to match the main branch
 
     - name: Generate static HTML
