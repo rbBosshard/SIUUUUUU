@@ -57,5 +57,5 @@ jobs:
 
     - name: Push to html-update branch
       run: |
-        git push origin html-update  # Push the updated file to html-update branch
+        git push origin html-update --force # Push the updated file to html-update branch with force option (to overwrite history beacuse of rebase)
   
