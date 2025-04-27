@@ -33,6 +33,11 @@ jobs:
 
     - name: Generate static HTML
       run: python generate_html.py
+    
+    - name: Setup git for commit
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
 
     - name: Check out and create html-update branch if not exists
       run: |
@@ -40,10 +45,13 @@ jobs:
         git checkout html-update || git checkout -b html-update
         git pull origin html-update
 
-    - name: Commit updated HTML
+    - name: Copy updated docs/index.html to html-update branch
       run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
+        git checkout main -- docs/index.html  # Checkout only the updated file from main branch
         git add docs/index.html
-        git commit -m "Update static HTML" || echo "No changes to commit"
-        git push origin html-update
+        git commit -m "Update static HTML" || echo "No changes to commit"  # Only commit if changes exist
+    
+    - name: Push to html-update branch
+      run: |
+        git push origin html-update  # Push the updated file to html-update branch
+  
