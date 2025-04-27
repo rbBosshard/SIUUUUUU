@@ -16,6 +16,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Setup git for commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+      
+      - name: Checkout and reset html-update branch
+        run: |
+          git fetch --all
+          git checkout html-update || git checkout -b html-update origin/html-update  # Create the html-update branch if it doesn't exist
+          git reset --hard origin/main  # Reset the html-update branch to match the main branch
+
       - name: Fetch API data
         id: api_check
         run: |
@@ -36,14 +47,11 @@ jobs:
               echo "api_updated=false" >> $GITHUB_ENV  # No update
             fi
           fi
-          # Store the current API data for future comparisons
+          echo "Storing current API data for future comparisons."
           mv current_api_data.json previous_api_data.json
-          # Push this file to the repo for comparison in the next run
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
           git add previous_api_data.json
           git commit -m "Update previous_api_data.json" || echo "No changes to commit"
-          git push origin main  # Push the updated file to the main branch
+          git push origin html-update --force 
 
     outputs:
       api_updated: ${{ steps.compare_update.outputs.api_updated }}
@@ -74,17 +82,6 @@ jobs:
 
     - name: Install Chrome
       uses: browser-actions/setup-chrome@v1
-    
-    - name: Setup git for commit
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-    
-    - name: Checkout and reset html-update branch
-      run: |
-        git fetch --all
-        git checkout html-update || git checkout -b html-update origin/html-update  # Create the html-update branch if it doesn't exist
-        git reset --hard origin/main  # Reset the html-update branch to match the main branch
 
     - name: Generate static HTML
       run: |
@@ -98,4 +95,4 @@ jobs:
 
     - name: Push to html-update branch
       run: |
-        git push origin html-update --force # Push the updated file to html-update branch with force option (to overwrite history because of rebase)
+        git push origin html-update --force
