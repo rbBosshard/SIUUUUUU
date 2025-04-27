@@ -24,8 +24,8 @@ jobs:
       - name: Checkout and reset html-update branch
         run: |
           git fetch --all
-          git checkout html-update || git checkout -b html-update origin/html-update  # Create the html-update branch if it doesn't exist
-          git reset --hard origin/main  # Reset the html-update branch to match the main branch
+          git checkout meta-data || git checkout -b meta-data origin/meta-data  # Create the meta-data branch if it doesn't exist
+          git pull
 
       - name: Fetch API data
         id: api_check
@@ -51,7 +51,7 @@ jobs:
           mv current_api_data.json previous_api_data.json
           git add previous_api_data.json
           git commit -m "Update previous_api_data.json" || echo "No changes to commit"
-          git push origin html-update --force 
+          git push origin meta-data --force  # Push the changes to the meta-data branch
 
     outputs:
       api_updated: ${{ steps.compare_update.outputs.api_updated }}
@@ -82,12 +82,18 @@ jobs:
 
     - name: Install Chrome
       uses: browser-actions/setup-chrome@v1
-
+    
+    - name: Checkout and reset html-update branch
+      run: |
+        git fetch --all
+        git checkout html-update || git checkout -b html-update origin/html-update  # Create the html-update branch if it doesn't exist
+        git reset --hard origin/main  # Reset the html-update branch to match the main branch
+    
     - name: Generate static HTML
       run: |
         python generate_html.py
         cat app.py
-
+        
     - name: Generate static HTML and commit changes
       run: |
         git add .  # Stage the generated index.html
