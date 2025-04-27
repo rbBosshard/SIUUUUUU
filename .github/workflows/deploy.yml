@@ -34,6 +34,12 @@ jobs:
     - name: Generate static HTML
       run: python generate_html.py
 
+    - name: Check out and create html-update branch if not exists
+      run: |
+        git fetch origin
+        git checkout html-update || git checkout -b html-update
+        git pull origin html-update
+
     - name: Commit updated HTML
       run: |
         git config user.name "github-actions"
