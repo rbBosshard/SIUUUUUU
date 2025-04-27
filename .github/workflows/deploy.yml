@@ -34,6 +34,14 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
+    
+    - name: Clean up rebase state (if exists)
+      run: |
+        rm -rf .git/rebase-merge
+    
+    - name: Abort any ongoing rebase if exists
+      run: |
+        git rebase --abort || echo "No rebase in progress"
 
     - name: Checkout and rebase html-update branch onto main
       run: |
