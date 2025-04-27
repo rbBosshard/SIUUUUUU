@@ -39,7 +39,6 @@ jobs:
           if [[ -f previous_api_data.json ]]; then
             if ! diff previous_api_data.json current_api_data.json; then
               echo "API data updated"
-              echo "true" >> $GITHUB_ENV  # Set an environment variable indicating an update
               echo "api_updated=true" >> $GITHUB_ENV  # Set output to indicate an update
             else
               echo "API data has not changed."
