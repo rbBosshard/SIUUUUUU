@@ -16,8 +16,10 @@ LEAGUE_URL = f"https://fantasy.premierleague.com/api/leagues-classic/{league_id}
 MONEY_PAID_ICON = "🤑"
 MONEY_NOT_PAID_ICON = ""
 OVERRIDE_UNPAID_WINNERS = True
+USE_TEST_DATA = False
 ERROR_MSG = "Error: Unexpected data. Please check the API response."
-no_opponent = "-"
+no_opponent = "BYE"
+not_yet_played_points = "?"
 
 USERS = {
     "FcLookingDownOnYou",
@@ -62,7 +64,7 @@ PAID_USERS = {
 
 user_map = {user: user for user in USERS}
 user_ids = {}
-
+user_player_name_map = {user: user for user in USERS}
 
 def get_points(entry_id, gameweek):
     """Fetch current gameweek user data from the API."""
@@ -75,13 +77,14 @@ def get_points(entry_id, gameweek):
 
 
 ok = True
-response = requests.get(API_URL)
-data = response.json()
 
-# use dummy data for testing
-# with open('test_data.json', 'r') as file:
-#     data = json.load(file)
-
+data = {}
+if USE_TEST_DATA:
+    with open('test_data.json', 'r') as file:
+        data = json.load(file)
+else:
+    response = requests.get(API_URL)
+    data = response.json()
 
 if data["has_next"]:
     print(
@@ -118,10 +121,14 @@ match_results = []
 for round_name, round_df in rounds_df.items():
     gameweek = round_gameweek_map[round_name]
     print(f"Processing {round_name}")
+    points = round_df["entry_1_points"].sum() + round_df["entry_2_points"].sum()
+    started = True if points > 0 else False
+    match_results_round = []
     for i, match in round_df.iterrows():
         entry_1_name = match["entry_1_name"]
         entry_2_name = match["entry_2_name"]
-
+        
+        # if first round, get user ids from the match data
         if round_name == sorted_rounds[0]:
             user_ids[entry_1_name] = (
                 int(match["entry_1_entry"])
@@ -133,11 +140,19 @@ for round_name, round_df in rounds_df.items():
                 if not pd.isna(match["entry_2_entry"])
                 else None
             )
+            user_player_name_map[entry_1_name] = match["entry_1_player_name"]
+            user_player_name_map[entry_2_name] = match["entry_2_player_name"]
 
         entry_1_entry = user_ids[entry_1_name]
         entry_2_entry = user_ids[entry_2_name]
         entry_1_name = user_map.get(entry_1_name)
         entry_2_name = user_map.get(entry_2_name)
+        entry_1_player_name = user_player_name_map.get(entry_1_name)
+        entry_2_player_name = user_player_name_map.get(entry_2_name)
+        if not entry_1_player_name:
+            entry_1_player_name = ""
+        if not entry_2_player_name:
+            entry_2_player_name = ""
 
         entry_1_points = (
             get_points(entry_1_entry, gameweek)
@@ -179,12 +194,16 @@ for round_name, round_df in rounds_df.items():
             entry_1_name = no_opponent
         if not entry_2_name:
             entry_2_name = no_opponent
+        
+        if not started:
+            entry_1_points = not_yet_played_points
+            entry_2_points = not_yet_played_points
 
-        match_results.append(
+        match_results_round.append(
             {   
                 "round": reversed_round_names.get(round_name),
-                "team 1": f"{MONEY_PAID_ICON if entry_1_name in PAID_USERS else MONEY_NOT_PAID_ICON} {entry_1_name} {entry_1_points}",
-                "team 2": f"{entry_2_points} {entry_2_name} {MONEY_PAID_ICON if entry_2_name in PAID_USERS else MONEY_NOT_PAID_ICON}",
+                "team 1": f"{MONEY_PAID_ICON if entry_1_name in PAID_USERS else MONEY_NOT_PAID_ICON} {entry_1_name} {entry_1_player_name} {entry_1_points}",   
+                "team 2": f"{entry_2_points} {entry_2_name} {entry_2_player_name} {MONEY_PAID_ICON if entry_2_name in PAID_USERS else MONEY_NOT_PAID_ICON}",
                 "winner": (
                     1
                     if winner == entry_1_name
@@ -193,9 +212,10 @@ for round_name, round_df in rounds_df.items():
             }
         )
 
+    match_results.extend(match_results_round[::-1])
+
 # reverse match_results to show the latest matches at the top
 match_results = match_results[::-1]
-
 
 # Initialize Dash app
 app = dash.Dash(__name__)
@@ -215,9 +235,9 @@ else:
             dash_table.DataTable(
                 id="cup-results-table",
                 columns=[
-                    {"name": "Round", "id": "round"},
-                    {"name": "Team 1", "id": "team 1"},
-                    {"name": "Team 2", "id": "team 2"},
+                    {"name": "Round", "id": "round", "presentation": "text"},
+                    {"name": "Team 1", "id": "team 1", "presentation": "text"},
+                    {"name": "Team 2", "id": "team 2", "presentation": "text"},
                 ],
                 data=match_results,
                 style_table={
