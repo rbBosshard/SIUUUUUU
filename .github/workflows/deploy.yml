@@ -39,24 +39,17 @@ jobs:
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
 
-    - name: Stash local changes before switching branches
-      run: |
-        git add docs/index.html  # Stage only the changed file
-        git stash push -m "Stashing changes before switching to html-update branch"  # Stash the changes
-  
-    - name: Check out and create html-update branch if not exists
+    - name: Checkout and rebase html-update branch onto main
       run: |
         git fetch origin
-        git checkout html-update || git checkout -b html-update
-        git pull origin html-update
+        git checkout html-update  # Checkout the html-update branch
+        git rebase origin/main  # Rebase onto the latest main
 
-    - name: Apply stashed changes and commit
+    - name: Generate static HTML and commit changes
       run: |
-        git stash pop  # Apply the stashed changes (docs/index.html)
-        git checkout --theirs docs/index.html  # Resolve the conflict by taking the changes from the stash (i.e., "theirs")
-        git add docs/index.html  # Add the stashed file changes
-        git commit -m "Update static HTML" || echo "No changes to commit"  # Only commit if there are changes
-    
+        git add docs/index.html  # Stage the generated index.html
+        git commit -m "Update static HTML" || echo "No changes to commit"  # Commit changes if any
+
     - name: Push to html-update branch
       run: |
         git push origin html-update  # Push the updated file to html-update branch
