@@ -42,10 +42,9 @@ jobs:
 
     - name: Checkout and rebase html-update branch onto main
       run: |
-        git fetch origin
         git checkout html-update  # Checkout the html-update branch
-        git pull origin html-update  # Pull the latest changes from html-update branch
-        git rebase origin/main -X ours || { echo "Rebase failed. Aborting."; git rebase --abort; exit 1; }
+        git fetch origin
+        git reset --hard origin/main  # Reset the html-update branch to match the main branch
 
     - name: Generate static HTML
       run: |
