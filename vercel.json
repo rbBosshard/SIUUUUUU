@@ -1,0 +1,13 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "docs/index.html",
+        "use": "@vercel/static"
+      }
+    ],
+    "git": {
+      "branch": "html-update"
+    }
+  }
+  
