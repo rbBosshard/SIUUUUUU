@@ -48,11 +48,13 @@ jobs:
         git rebase origin/main -X theirs || { echo "Rebase failed. Aborting."; git rebase --abort; exit 1; }
 
     - name: Generate static HTML
-      run: python generate_html.py
+      run: |
+        python generate_html.py
+        cat app.py
 
     - name: Generate static HTML and commit changes
       run: |
-        git add docs/index.html  # Stage the generated index.html
+        git add .  # Stage the generated index.html
         git commit -m "Update static HTML" || echo "No changes to commit"  # Commit changes if any
 
     - name: Push to html-update branch
