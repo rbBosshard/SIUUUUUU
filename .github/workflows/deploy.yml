@@ -22,6 +22,12 @@ jobs:
           response=$(curl -s https://fantasy.premierleague.com/api/leagues-h2h-matches/league/2696403/?page=1)
           echo "$response" > current_api_data.json
 
+      - name: Download previous API data artifact (if exists)
+        uses: actions/download-artifact@v3
+        with:
+          name: previous-api-data
+          path: ./  # Downloads the artifact to the current directory
+
       - name: Compare API response
         id: compare_update
         run: |
@@ -38,6 +44,12 @@ jobs:
           fi
           # Store the current API data for future comparisons
           mv current_api_data.json previous_api_data.json
+          
+      - name: Upload updated previous API data as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: previous-api-data
+          path: previous_api_data.json
 
     outputs:
       api_updated: ${{ steps.compare_update.outputs.api_updated }}
