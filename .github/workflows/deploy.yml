@@ -30,9 +30,6 @@ jobs:
 
     - name: Install Chrome
       uses: browser-actions/setup-chrome@v1
-
-    - name: Generate static HTML
-      run: python generate_html.py
     
     - name: Setup git for commit
       run: |
@@ -43,7 +40,11 @@ jobs:
       run: |
         git fetch origin
         git checkout html-update  # Checkout the html-update branch
+        git stash  # Stash any uncommitted changes
         git rebase origin/main  # Rebase onto the latest main
+
+    - name: Generate static HTML
+      run: python generate_html.py
 
     - name: Generate static HTML and commit changes
       run: |
