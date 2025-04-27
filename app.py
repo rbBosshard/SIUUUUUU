@@ -228,7 +228,7 @@ if not ok:
     )
 
 else:
-    app.title = f"{league_name}"
+    app.title = f"{league_name} - Cup Results"
     app.layout = html.Div(
         [
             html.H1(f"{league_name}", style={"textAlign": "center"}),
