@@ -38,9 +38,6 @@ jobs:
     - name: Clean up rebase state (if exists)
       run: |
         rm -rf .git/rebase-merge
-    
-    - name: Abort any ongoing rebase if exists
-      run: |
         git rebase --abort || echo "No rebase in progress"
 
     - name: Checkout and rebase html-update branch onto main
@@ -48,7 +45,7 @@ jobs:
         git fetch origin
         git checkout html-update  # Checkout the html-update branch
         git stash
-        git rebase origin/main  || git rebase --strategy=recursive --strategy-option=theirs # Rebase onto the latest main with conflict resolution overwrite
+        git rebase origin/main -X theirs || git rebase --strategy=recursive --strategy-option=theirs
 
     - name: Generate static HTML
       run: python generate_html.py
