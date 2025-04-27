@@ -44,6 +44,7 @@ jobs:
       run: |
         git fetch origin
         git checkout html-update  # Checkout the html-update branch
+        git pull origin html-update  # Pull the latest changes from html-update branch
         git stash
         git rebase origin/main -X theirs || { echo "Rebase failed. Aborting."; git rebase --abort; exit 1; }
 
