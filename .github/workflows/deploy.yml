@@ -2,9 +2,6 @@ name: Build Dashboard
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - html-update
 
 permissions:
   contents: write
@@ -43,4 +40,4 @@ jobs:
         git config user.email "github-actions@github.com"
         git add docs/index.html
         git commit -m "Update static HTML" || echo "No changes to commit"
-        git push
+        git push origin html-update
