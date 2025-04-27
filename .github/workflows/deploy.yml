@@ -21,12 +21,11 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
       
-      - name: Checkout and reset html-update branch
+      - name: Checkout and reset meta-data branch
         run: |
           git fetch --all
           git checkout meta-data || git checkout -b meta-data origin/meta-data  # Create the meta-data branch if it doesn't exist
-          git pull
-
+          
       - name: Fetch API data
         id: api_check
         run: |
@@ -92,11 +91,12 @@ jobs:
     - name: Generate static HTML
       run: |
         python generate_html.py
-        cat app.py
-        
+
     - name: Generate static HTML and commit changes
       run: |
-        git add .  # Stage the generated index.html
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add . 
         git commit -m "Update static HTML" || echo "No changes to commit"  # Commit changes if any
 
     - name: Push to html-update branch
