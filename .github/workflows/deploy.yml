@@ -53,8 +53,7 @@ jobs:
     - name: Apply stashed changes and commit
       run: |
         git stash pop  # Apply the stashed changes (docs/index.html)
-        # Conflict resolution can be handled here if needed. Ovverride the file if there are conflicts.
-        git merge --strategy=recursive --strategy-option=theirs docs/index.html 
+        git checkout --theirs docs/index.html  # Resolve the conflict by taking the changes from the stash (i.e., "theirs")
         git add docs/index.html  # Add the stashed file changes
         git commit -m "Update static HTML" || echo "No changes to commit"  # Only commit if there are changes
     
