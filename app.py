@@ -54,6 +54,7 @@ PAID_USERS = {
     "JK",
     "The Boys",
     "IceManUnited",
+    "united",
     "Stiftung Wadentest",
     "Peaky Blinders",
     "NYC United",
