@@ -62,6 +62,7 @@ PAID_USERS = {
     "ManCity11",
     "Handsome Fc",
     "Team Balo",
+    "Patcha"
 }
 
 user_map = {user: user for user in USERS}
