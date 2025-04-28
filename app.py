@@ -60,6 +60,7 @@ PAID_USERS = {
     "NYC United",
     "Larsenal",
     "ManCity11",
+    "Handsome Fc",
     "Team Balo",
 }
 
