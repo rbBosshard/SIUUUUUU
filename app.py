@@ -108,7 +108,7 @@ reversed_round_names = {v: k for k, v in round_match_counts.items()}
 
 round_gameweek_map = {
     k: starting_cup_gameweek + i
-    for i, (k, v) in enumerate(reversed_round_names.items())
+    for i, (k, v) in enumerate(reversed(reversed_round_names.items()))
 }
 
 sorted_rounds = sorted(round_match_counts.values(), reverse=True)
@@ -199,6 +199,7 @@ for round_name, round_df in rounds_df.items():
             entry_2_name = no_opponent
         
         if not started:
+            winner = unknown_winner
             entry_1_points = not_yet_played_points
             entry_2_points = not_yet_played_points
 
