@@ -62,7 +62,7 @@ jobs:
     needs: check-api-update  # Ensures this job runs after `check-api-update` job
 
     # This ensures the build job only runs if the API data has changed or if the workflow is manually triggered
-    if: ${{ needs.check-api-update.outputs.api_updated == 'true' }}
+    if: ${{ needs.check-api-update.outputs.api_updated == 'true' || github.event_name == 'workflow_dispatch' }}
 
     steps:
     - name: Checkout repo
