@@ -44,7 +44,6 @@ jobs:
               echo "API data has not changed."
               echo "api_updated=false" >> $GITHUB_OUTPUT  # No update
             fi
-          fi
           else
             echo "First run or previous data missing. Treating as update."
             echo "api_updated=true" >> $GITHUB_OUTPUT
@@ -63,7 +62,7 @@ jobs:
     needs: check-api-update  # Ensures this job runs after `check-api-update` job
 
     # This ensures the build job only runs if the API data has changed or if the workflow is manually triggered
-    if: ${{ needs.check-api-update.outputs.api_updated == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ needs.check-api-update.outputs.api_updated == 'true' }}
 
     steps:
     - name: Checkout repo
