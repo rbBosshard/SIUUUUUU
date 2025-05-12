@@ -106,10 +106,13 @@ round_match_counts = {
 
 reversed_round_names = {v: k for k, v in round_match_counts.items()}
 
-round_gameweek_map = {
-    k: starting_cup_gameweek + i
-    for i, (k, v) in enumerate(reversed(reversed_round_names.items()))
-}
+# round_gameweek_map = {
+#     k: starting_cup_gameweek + i
+#     for i, (k, v) in enumerate(reversed(reversed_round_names.items()))
+# }
+
+round_gameweek_map = [[k, starting_cup_gameweek + i,] for i, k in enumerate(sorted(reversed_round_names.keys(), reverse=True))]
+round_gameweek_map = dict(round_gameweek_map)
 
 sorted_rounds = sorted(round_match_counts.values(), reverse=True)
 
@@ -224,6 +227,7 @@ match_results = match_results[::-1]
 # Initialize Dash app
 app = dash.Dash(__name__)
 
+
 if not ok:
     app.layout = html.Div(
         [
@@ -291,4 +295,4 @@ else:
     )
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=False, port=8051)
