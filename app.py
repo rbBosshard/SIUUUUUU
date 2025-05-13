@@ -295,4 +295,4 @@ else:
     )
 
 if __name__ == "__main__":
-    app.run(debug=False, port=8051)
+    app.run(debug=False, port=8050)
